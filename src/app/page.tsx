@@ -1,64 +1,101 @@
-import Image from "next/image";
-import styles from "./page.module.css";
-
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>To get started, edit the page.tsx file.</h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-vh-100 bg-light">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div className="container-fluid">
+          <a className="navbar-brand" href="#">
+            POS System
+          </a>
+          <button
+            className="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          >
+            <span className="navbar-toggler-icon"></span>
+          </button>
+          <div className="collapse navbar-collapse" id="navbarNav">
+            <ul className="navbar-nav ms-auto">
+              <li className="nav-item">
+                <a className="nav-link active" aria-current="page" href="#">
+                  Dashboard
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#products">
+                  Products
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#pos">
+                  POS Terminal
+                </a>
+              </li>
+              <li className="nav-item">
+                <a className="nav-link" href="#transactions">
+                  Transactions
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </nav>
+
+      <main className="container py-5">
+        <div className="row mb-4">
+          <div className="col-12 col-lg-8">
+            <h1 className="mb-3">Welcome to the POS System</h1>
+            <p className="text-muted">
+              Manage products, process sales, and view transactions in one place.
+            </p>
+          </div>
+        </div>
+
+        <div className="row g-4">
+          <div className="col-12 col-md-4" id="products">
+            <div className="card h-100">
+              <div className="card-body">
+                <h5 className="card-title">Products</h5>
+                <p className="card-text">
+                  Create and manage the products available for sale in your store.
+                </p>
+                <button className="btn btn-primary" disabled>
+                  Go to Products
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-12 col-md-4" id="pos">
+            <div className="card h-100">
+              <div className="card-body">
+                <h5 className="card-title">POS Terminal</h5>
+                <p className="card-text">
+                  Open the cashier screen to add items to the cart and process payments.
+                </p>
+                <button className="btn btn-success" disabled>
+                  Open POS
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="col-12 col-md-4" id="transactions">
+            <div className="card h-100">
+              <div className="card-body">
+                <h5 className="card-title">Transactions</h5>
+                <p className="card-text">
+                  View transaction history, totals, and basic reporting.
+                </p>
+                <button className="btn btn-outline-secondary" disabled>
+                  View Transactions
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </main>
     </div>
