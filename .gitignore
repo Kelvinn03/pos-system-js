@@ -18,3 +18,4 @@ yarn-error.log*
 out/ # For static exports
 
 next-env.d.ts
+/src/generated/prisma

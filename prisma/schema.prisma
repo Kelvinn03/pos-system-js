@@ -1,0 +1,57 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  products  Product[]
+}
+
+model Product {
+  id          Int       @id @default(autoincrement())
+  name        String
+  sku         String    @unique
+  priceCents  Int
+  stock       Int       @default(0)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  categoryId  Int?
+  category    Category? @relation(fields: [categoryId], references: [id])
+
+  items       TransactionItem[]
+}
+
+model Transaction {
+  id          Int               @id @default(autoincrement())
+  createdAt   DateTime          @default(now())
+  totalCents  Int
+
+  items       TransactionItem[]
+}
+
+model TransactionItem {
+  id            Int          @id @default(autoincrement())
+  quantity      Int
+  priceCents    Int
+  subtotalCents Int
+
+  productId     Int
+  transactionId Int
+
+  product       Product      @relation(fields: [productId], references: [id])
+  transaction   Transaction  @relation(fields: [transactionId], references: [id])
+}
