@@ -1,4 +1,12 @@
-export default function PosTerminalPage() {
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+
+export default async function PosTerminalPage() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/login");
+  }
+
   return (
     <div className="container py-5">
       <h1 className="mb-4">POS Terminal</h1>

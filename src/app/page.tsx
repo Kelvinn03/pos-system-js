@@ -1,6 +1,13 @@
 import Link from "next/link";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/login");
+  }
+
   return (
     <div className="min-vh-100 bg-light">
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">

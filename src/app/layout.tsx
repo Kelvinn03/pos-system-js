@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { auth } from "@/auth";
+import AppNavbar from "@/components/AppNavbar";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -18,14 +20,17 @@ export const metadata: Metadata = {
   description: "Simple POS system built with Next.js",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const session = await auth();
+
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <AppNavbar session={session} />
         {children}
       </body>
     </html>

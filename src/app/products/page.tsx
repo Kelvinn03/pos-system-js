@@ -1,4 +1,6 @@
 import prisma from "@/lib/prisma";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
 
 const formatCurrency = (cents: number) => {
   return new Intl.NumberFormat("id-ID", {
@@ -9,6 +11,11 @@ const formatCurrency = (cents: number) => {
 };
 
 export default async function ProductsPage() {
+  const session = await auth();
+  if (!session?.user) {
+    redirect("/login");
+  }
+
   const products = await prisma.product.findMany({
     include: { category: true },
     orderBy: { createdAt: "desc" },
