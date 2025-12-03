@@ -8,6 +8,7 @@ export async function GET() {
   try {
     const listProduk = await prisma.product.findMany({
       orderBy: { createdAt: "desc" },
+      include: { category: true },
     });
     return NextResponse.json(listProduk);
   } catch (error) {

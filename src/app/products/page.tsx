@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
-import { Container, Table, Button, Modal, Form, Spinner, Alert, Row, Col, Badge } from "react-bootstrap";
+import { useEffect, useState, useMemo } from "react";
+import { Container, Table, Button, Modal, Form, Spinner, Alert, Row, Col, Badge, InputGroup } from "react-bootstrap";
 
 type Category = {
   id: number;
@@ -30,14 +30,18 @@ const initialFormState = {
 };
 
 export default function ProductsPage() {
+
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [errorMsg, setErrorMsg] = useState("");
   
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterCategory, setFilterCategory] = useState("");
+  const [sortOption, setSortOption] = useState("newest"); // Default: Terbaru
+
   const [showModal, setShowModal] = useState(false);
   const [formData, setFormData] = useState(initialFormState);
-  
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
 
   useEffect(() => {
@@ -51,7 +55,6 @@ export default function ProductsPage() {
         fetch("/api/products"),
         fetch("/api/categories")
       ]);
-
       const dataProd = await resProd.json();
       const dataCat = await resCat.json();
 
@@ -69,10 +72,47 @@ export default function ProductsPage() {
     const data = await res.json();
     setProducts(data);
   }
-  
+
+  const filteredProducts = useMemo(() => {
+    let result = [...products];
+
+    if (searchTerm) {
+      const lowerTerm = searchTerm.toLowerCase();
+      result = result.filter(p => 
+        p.name.toLowerCase().includes(lowerTerm) || 
+        p.sku.toLowerCase().includes(lowerTerm)
+      );
+    }
+
+    if (filterCategory) {
+      result = result.filter(p => p.categoryId === parseInt(filterCategory));
+    }
+
+    switch (sortOption) {
+      case "price_asc": // Termurah
+        result.sort((a, b) => a.priceCents - b.priceCents);
+        break;
+      case "price_desc": // Termahal
+        result.sort((a, b) => b.priceCents - a.priceCents);
+        break;
+      case "name_asc": // Nama A-Z
+        result.sort((a, b) => a.name.localeCompare(b.name));
+        break;
+      case "name_desc": // Nama Z-A
+        result.sort((a, b) => b.name.localeCompare(a.name));
+        break;
+      case "newest": // Default (ID terbesar biasanya terbaru)
+      default:
+        result.sort((a, b) => b.id - a.id);
+        break;
+    }
+
+    return result;
+  }, [products, searchTerm, filterCategory, sortOption]);
+
+  // --- HANDLERS ---
   const bukaModal = (product?: Product) => {
     setErrorMsg("");
-    
     if (product) {
       setEditingProduct(product);
       setFormData({
@@ -87,7 +127,6 @@ export default function ProductsPage() {
       setEditingProduct(null);
       setFormData(initialFormState);
     }
-    
     setShowModal(true);
   };
 
@@ -104,7 +143,6 @@ export default function ProductsPage() {
 
   async function handleSimpan() {
     setErrorMsg("");
-    
     const isEditMode = !!editingProduct;
     const method = isEditMode ? "PUT" : "POST";
     const payload = isEditMode ? { ...formData, id: editingProduct.id } : formData;
@@ -121,11 +159,9 @@ export default function ProductsPage() {
         setErrorMsg(errorData.error);
         return;
       }
-
       tutupModal();
       refreshProducts();
       alert(`Produk berhasil ${isEditMode ? "diupdate" : "ditambahkan"}!`);
-      
     } catch (err) {
       alert("Terjadi kesalahan sistem.");
     }
@@ -133,7 +169,6 @@ export default function ProductsPage() {
 
   async function handleHapus(product: Product) {
     if (!confirm(`Hapus produk "${product.name}"?`)) return;
-
     await fetch(`/api/products?id=${product.id}`, { method: "DELETE" });
     refreshProducts();
   }
@@ -146,6 +181,7 @@ export default function ProductsPage() {
     }).format(cents / 100);
   };
 
+  // --- RENDER ---
   return (
     <div className="bg-light min-vh-100 py-5">
       <Container>
@@ -160,7 +196,57 @@ export default function ProductsPage() {
           </Button>
         </div>
 
-        {/* Tabel */}
+        {/* --- TOOLBAR: SEARCH & FILTER --- */}
+        <div className="card shadow-sm border-0 mb-4">
+          <div className="card-body">
+            <Row className="g-3">
+              {/* Search Box */}
+              <Col md={4}>
+                <InputGroup>
+                  <InputGroup.Text className="bg-white border-end-0">
+                    🔍
+                  </InputGroup.Text>
+                  <Form.Control 
+                    type="text" 
+                    placeholder="Cari nama produk / SKU..." 
+                    className="border-start-0"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                </InputGroup>
+              </Col>
+
+              {/* Filter Kategori */}
+              <Col md={4}>
+                <Form.Select 
+                  value={filterCategory} 
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                >
+                  <option value="">Semua Kategori</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>{cat.name}</option>
+                  ))}
+                </Form.Select>
+              </Col>
+
+              {/* Sorting */}
+              <Col md={4}>
+                <Form.Select 
+                  value={sortOption} 
+                  onChange={(e) => setSortOption(e.target.value)}
+                >
+                  <option value="newest">Urutkan: Terbaru</option>
+                  <option value="price_asc">Harga: Termurah</option>
+                  <option value="price_desc">Harga: Termahal</option>
+                  <option value="name_asc">Nama: A - Z</option>
+                  <option value="name_desc">Nama: Z - A</option>
+                </Form.Select>
+              </Col>
+            </Row>
+          </div>
+        </div>
+
+        {/* --- TABEL DATA --- */}
         <div className="card shadow-sm border-0">
           <div className="card-body p-0">
             {loading ? (
@@ -181,10 +267,12 @@ export default function ProductsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {products.length === 0 ? (
-                    <tr><td colSpan={6} className="text-center py-5 text-muted">Data kosong.</td></tr>
+                  {filteredProducts.length === 0 ? (
+                    <tr><td colSpan={6} className="text-center py-5 text-muted">
+                      {searchTerm || filterCategory ? "Produk tidak ditemukan." : "Belum ada data produk."}
+                    </td></tr>
                   ) : (
-                    products.map((item) => (
+                    filteredProducts.map((item) => (
                       <tr key={item.id}>
                         <td className="ps-4">
                           <div style={{ 
@@ -205,9 +293,7 @@ export default function ProductsPage() {
                         </td>
                         <td>
                           {item.category ? (
-                            <Badge bg="info" className="text-dark">
-                              {item.category.name}
-                            </Badge>
+                            <Badge bg="info" className="text-dark">{item.category.name}</Badge>
                           ) : (
                             <span className="text-muted small">-</span>
                           )}
@@ -255,81 +341,40 @@ export default function ProductsPage() {
           <Form>
             <Form.Group className="mb-3">
               <Form.Label>Kode SKU</Form.Label>
-              <Form.Control 
-                type="text" 
-                name="sku" 
-                placeholder="Contoh: K-001"
-                value={formData.sku} 
-                onChange={handleInput} 
-              />
+              <Form.Control type="text" name="sku" placeholder="K-001" value={formData.sku} onChange={handleInput} />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Nama Produk</Form.Label>
-              <Form.Control 
-                type="text" 
-                name="name" 
-                placeholder="Contoh: Nasi Goreng"
-                value={formData.name} 
-                onChange={handleInput} 
-              />
+              <Form.Control type="text" name="name" placeholder="Nasi Goreng" value={formData.name} onChange={handleInput} />
             </Form.Group>
 
             <Form.Group className="mb-3">
               <Form.Label>Kategori</Form.Label>
-              <Form.Select 
-                name="categoryId" 
-                value={formData.categoryId} 
-                onChange={handleInput}
-              >
+              <Form.Select name="categoryId" value={formData.categoryId} onChange={handleInput}>
                 <option value="">-- Pilih Kategori --</option>
                 {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
+                  <option key={cat.id} value={cat.id}>{cat.name}</option>
                 ))}
               </Form.Select>
-              {categories.length === 0 && (
-                <Form.Text className="text-danger">
-                  Kategori kosong! Tambahkan lewat Prisma Studio.
-                </Form.Text>
-              )}
             </Form.Group>
             
             <Form.Group className="mb-3">
-              <Form.Label>URL Gambar (Opsional)</Form.Label>
-              <Form.Control 
-                type="text" 
-                name="image" 
-                placeholder="https://..."
-                value={formData.image} 
-                onChange={handleInput} 
-              />
+              <Form.Label>URL Gambar</Form.Label>
+              <Form.Control type="text" name="image" placeholder="https://..." value={formData.image} onChange={handleInput} />
             </Form.Group>
 
             <Row>
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Harga (Rp)</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    name="price" 
-                    placeholder="15000"
-                    value={formData.price} 
-                    onChange={handleInput} 
-                  />
+                  <Form.Control type="number" name="price" placeholder="15000" value={formData.price} onChange={handleInput} />
                 </Form.Group>
               </Col>
               <Col>
                 <Form.Group className="mb-3">
                   <Form.Label>Stok</Form.Label>
-                  <Form.Control 
-                    type="number" 
-                    name="stock" 
-                    placeholder="100"
-                    value={formData.stock} 
-                    onChange={handleInput} 
-                  />
+                  <Form.Control type="number" name="stock" placeholder="100" value={formData.stock} onChange={handleInput} />
                 </Form.Group>
               </Col>
             </Row>
