@@ -13,3 +13,10 @@ export type Product = {
   categoryId: number | null;
   category: Category | null;
 };
+
+export type CartItem = {
+  id: number;
+  name: string;
+  priceCents: number;
+  quantity: number;
+};
