@@ -2,8 +2,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
-// Note: Navbar sudah ada di layout.tsx
+import { Container, Row, Col, Card, Spinner, Table, ProgressBar } from "react-bootstrap";
+import Link from "next/link";
+
+type Product = {
+  id: number;
+  name: string;
+  sku: string;
+  stock: number;
+  priceCents: number;
+  image: string | null;
+  category?: { name: string };
+};
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -12,6 +22,8 @@ export default function Dashboard() {
     stock: 0,
     transactions: 0
   });
+  const [lowStock, setLowStock] = useState<Product[]>([]);
+  const [recentProducts, setRecentProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,27 +34,39 @@ export default function Dashboard() {
     try {
       const res = await fetch("/api/dashboard");
       const data = await res.json();
-      setStats(data);
+      
+      if (res.ok) {
+        setStats(data.summary);
+        setLowStock(data.lowStock);
+        setRecentProducts(data.recentProducts);
+      }
     } catch (err) {
-      console.error(err);
+      console.error("Gagal ambil data dashboard", err);
     } finally {
       setLoading(false);
     }
   }
 
+  // Format Rupiah
+  const toRupiah = (cents: number) => {
+    return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(cents / 100);
+  };
+
   // Komponen Kecil untuk Kartu Statistik (Biar kodenya rapi)
-  const StatCard = ({ title, value, icon, color }: any) => (
-    <Card className="border-0 shadow-sm h-100">
+  const StatCard = ({ title, value, icon, colorBg, colorText }: any) => (
+    <Card className="border-0 shadow-sm h-100" style={{ borderRadius: "12px" }}>
       <Card.Body className="d-flex align-items-center p-4">
         <div 
-          className={`d-flex align-items-center justify-content-center rounded-circle me-3`}
-          style={{ width: '60px', height: '60px', backgroundColor: `${color}20` }} // Opacity 20%
+          className="d-flex align-items-center justify-content-center rounded-circle me-3"
+          style={{ width: '64px', height: '64px', backgroundColor: colorBg, color: colorText, fontSize: '28px' }}
         >
-          <span style={{ fontSize: '24px' }}>{icon}</span>
+          {icon}
         </div>
         <div>
-          <p className="text-muted mb-1 small text-uppercase fw-bold">{title}</p>
-          <h3 className="mb-0 fw-bold text-dark">{loading ? "-" : value}</h3>
+          <p className="text-muted mb-1 small text-uppercase fw-bold" style={{ letterSpacing: "0.5px" }}>{title}</p>
+          <h3 className="mb-0 fw-bold text-dark">
+            {loading ? <Spinner animation="border" size="sm" /> : value}
+          </h3>
         </div>
       </Card.Body>
     </Card>
@@ -52,10 +76,12 @@ export default function Dashboard() {
     <div className="min-vh-100 py-5" style={{ backgroundColor: "#f3f4f6" }}> 
       <Container>
         {/* Header Section */}
-        <div className="mb-5">
-          <h2 className="fw-bold text-dark">Dashboard</h2>
-          <p className="text-muted">Selamat datang di Panel Admin POS System.</p>
+        <div className="d-flex justify-content-between align-items-center mb-5">
+          <div>
+          <h2 className="fw-bold text-dark mb-1">Dashboard</h2>
+          <p className="text-muted mb-0">Selamat datang di Panel Admin POS System.</p>
         </div>
+      </div>
 
         {/* --- BAGIAN 1: KARTU RINGKASAN (Target Hari Ini) --- */}
         {loading ? (
@@ -106,15 +132,123 @@ export default function Dashboard() {
           </Row>
         )}
 
-        {/* --- BAGIAN 2: DETAIL (AKAN DIKERJAKAN BESOK) --- */}
-        <Row>
-          <Col md={12}>
-            <div className="p-5 text-center text-muted border border-dashed rounded-3" style={{ backgroundColor: "#fff" }}>
-              🚧 Bagian Tabel & Detail akan ditambahkan pada update berikutnya.
-            </div>
+        {/* --- BAGIAN 2: DETAIL --- */}
+        <Row className="g-4">
+          
+          {/* KOLOM KIRI: TABEL PERINGATAN STOK MENIPIS */}
+          <Col lg={8}>
+            <Card className="border-0 shadow-sm h-100">
+              <Card.Header className="bg-white border-0 py-3 d-flex justify-content-between align-items-center">
+                <h6 className="fw-bold mb-0 text-dark">⚠️ Peringatan Stok Menipis</h6>
+                <Link href="/products" className="text-decoration-none small text-primary fw-bold">Kelola Stok &rarr;</Link>
+              </Card.Header>
+              <Card.Body className="p-0">
+                <Table responsive hover className="mb-0 align-middle">
+                  <thead className="bg-light">
+                    <tr>
+                      <th className="ps-4 text-muted small border-0">Produk</th>
+                      <th className="text-muted small border-0">SKU</th>
+                      <th className="text-muted small border-0">Status Stok</th>
+                      <th className="text-end pe-4 text-muted small border-0">Sisa</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loading ? (
+                      <tr><td colSpan={4} className="text-center py-4"><Spinner animation="border" size="sm" /></td></tr>
+                    ) : lowStock.length === 0 ? (
+                      <tr><td colSpan={4} className="text-center py-4 text-muted">Aman! Tidak ada stok yang menipis (di bawah 10).</td></tr>
+                    ) : (
+                      lowStock.map(item => (
+                        <tr key={item.id}>
+                          <td className="ps-4 fw-bold text-dark">
+                            <div className="d-flex align-items-center">
+                                <div style={{ width: '32px', height: '32px', background: '#eee', borderRadius: '4px', overflow: 'hidden', marginRight: '10px' }}>
+                                    {item.image ? (
+                                      <img src={item.image} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                                    ) : (
+                                      <span className="d-flex align-items-center justify-content-center h-100 small text-muted">Img</span>
+                                    )}
+                                </div>
+                                {item.name}
+                            </div>
+                          </td>
+                          <td className="text-muted small font-monospace">{item.sku}</td>
+                          <td style={{ minWidth: '150px' }}>
+                            {/* Progress Bar Visual */}
+                            <ProgressBar 
+                                now={(item.stock / 10) * 100} 
+                                variant={item.stock === 0 ? "danger" : "warning"} 
+                                style={{ height: "6px", borderRadius: "10px" }} 
+                            />
+                            <div className="d-flex justify-content-between mt-1">
+                                <small className={item.stock === 0 ? "text-danger fw-bold" : "text-warning fw-bold"} style={{ fontSize: "10px" }}>
+                                    {item.stock === 0 ? "HABIS" : "KRITIS"}
+                                </small>
+                            </div>
+                          </td>
+                          <td className="text-end pe-4 fw-bold text-dark">{item.stock}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </Table>
+              </Card.Body>
+            </Card>
+          </Col>
+
+          {/* KOLOM KANAN: LIST PRODUK TERBARU */}
+          <Col lg={4}>
+            <Card className="border-0 shadow-sm h-100">
+              <Card.Header className="bg-white border-0 py-3">
+                <h6 className="fw-bold mb-0 text-dark">🆕 Baru Ditambahkan</h6>
+              </Card.Header>
+              <Card.Body>
+                {loading ? (
+                  <div className="text-center"><Spinner animation="border" size="sm" /></div>
+                ) : recentProducts.length === 0 ? (
+                  <p className="text-muted text-center py-3">Belum ada data.</p>
+                ) : (
+                  <ul className="list-group list-group-flush">
+                    {recentProducts.map(item => (
+                      <li key={item.id} className="list-group-item border-0 px-0 d-flex align-items-center mb-3">
+                        <div 
+                          className="rounded-3 d-flex align-items-center justify-content-center me-3"
+                          style={{ 
+                            width: "48px", height: "48px", 
+                            backgroundColor: "#f1f5f9",
+                            overflow: "hidden"
+                          }}
+                        >
+                          {item.image ? (
+                            <img src={item.image} alt="" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                          ) : (
+                            <span className="text-muted" style={{ fontSize: "20px" }}>📦</span>
+                          )}
+                        </div>
+                        <div className="flex-grow-1">
+                          <h6 className="mb-0 fw-bold text-dark" style={{ fontSize: "14px" }}>{item.name}</h6>
+                          <small className="text-muted d-block" style={{ fontSize: "12px" }}>
+                             {item.category ? item.category.name : "Tanpa Kategori"}
+                          </small>
+                        </div>
+                        <div className="text-end">
+                          <span className="d-block fw-bold text-primary" style={{ fontSize: "13px" }}>
+                             {toRupiah(item.priceCents)}
+                          </span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+                <div className="d-grid mt-3">
+                  <Link href="/products" className="btn btn-light btn-sm fw-bold text-dark">
+                    Lihat Semua Produk
+                  </Link>
+                </div>
+              </Card.Body>
+            </Card>
           </Col>
         </Row>
-
       </Container>
     </div>
   );
