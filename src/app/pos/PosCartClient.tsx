@@ -68,18 +68,7 @@ export default function PosCartClient() {
 
   function proceedToPayment() {
     if (cart.length === 0) return;
-    const payload = {
-      items: cart,
-      subtotalCents,
-      taxCents,
-      grandTotalCents,
-      createdAt: new Date().toISOString(),
-    };
-    try {
-      localStorage.setItem("pos_cart", JSON.stringify(payload));
-    } catch {
-      // ignore storage errors
-    }
+    localStorage.setItem("pos_cart", JSON.stringify(cart));
     router.push("/pos/payment");
   }
 
