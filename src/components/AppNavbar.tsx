@@ -1,5 +1,9 @@
+"use client";
+
 import Link from "next/link";
 import type { Session } from "next-auth";
+import { usePathname } from "next/navigation";
+import NavbarUserActions from "./NavbarUserActions";
 
 interface AppNavbarProps {
   session: Session | null;
@@ -7,6 +11,10 @@ interface AppNavbarProps {
 
 export default function AppNavbar({ session }: AppNavbarProps) {
   const user = session?.user;
+  const pathname = usePathname();
+  const isAuthPage = ["/login", "/register", "/forgot-password"].includes(pathname);
+
+  if (isAuthPage) return null;
 
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -27,50 +35,53 @@ export default function AppNavbar({ session }: AppNavbarProps) {
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
           <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <Link className="nav-link" href="/">
-                Dashboard
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" href="/products">
-                Products
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" href="/pos">
-                POS Terminal
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" href="/transactions">
-                Transactions
-              </Link>
-            </li>
-          </ul>
-          <div className="d-flex align-items-center gap-2">
-            {user ? (
+            {user && (
               <>
-                <span className="text-white small">
-                  Hi, {user.name ?? user.email}
-                </span>
-                <form action="/api/auth/signout" method="post">
-                  <button type="submit" className="btn btn-outline-light btn-sm">
-                    Logout
-                  </button>
-                </form>
-              </>
-            ) : (
-              <>
-                <Link className="btn btn-outline-light btn-sm" href="/login">
-                  Login
-                </Link>
-                <Link className="btn btn-primary btn-sm" href="/register">
-                  Register
-                </Link>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/">
+                    Dashboard
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/products">
+                    Products
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/pos">
+                    POS Terminal
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/transactions">
+                    Transactions
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/contact">
+                    Contact Us
+                  </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/support">
+                    Customer Service
+                  </Link>
+                </li>
               </>
             )}
-          </div>
+          </ul>
+          {user ? (
+            <NavbarUserActions name={user.name} email={user.email} />
+          ) : (
+            <div className="d-flex align-items-center gap-2">
+              <Link className="btn btn-outline-light btn-sm" href="/login">
+                Login
+              </Link>
+              <Link className="btn btn-primary btn-sm" href="/register">
+                Register
+              </Link>
+            </div>
+          )}
         </div>
       </div>
     </nav>
