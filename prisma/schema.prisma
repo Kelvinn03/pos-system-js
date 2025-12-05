@@ -32,14 +32,12 @@ model Product {
   categoryId  Int?
   category    Category? @relation(fields: [categoryId], references: [id])
 
-  items       TransactionItem[]
 }
 
 model Transaction {
   id          Int               @id @default(autoincrement())
   createdAt   DateTime          @default(now())
   totalCents  Int
-
   items       TransactionItem[]
   cashierId   Int?
   cashier     User?             @relation(fields: [cashierId], references: [id])
@@ -51,13 +49,10 @@ model Transaction {
 model TransactionItem {
   id            Int          @id @default(autoincrement())
   quantity      Int
+  name          String
   priceCents    Int
   subtotalCents Int
-
-  productId     Int
   transactionId Int
-
-  product       Product      @relation(fields: [productId], references: [id])
   transaction   Transaction  @relation(fields: [transactionId], references: [id])
 }
 
