@@ -4,6 +4,7 @@ import prisma from "@/lib/prisma";
 // GET - List all customers with optional search and tier filter
 export async function GET(req: Request) {
     try {
+        console.log("Fetching customers...");
         const { searchParams } = new URL(req.url);
         const search = searchParams.get("search") || "";
         const tier = searchParams.get("tier") || "";
@@ -11,38 +12,45 @@ export async function GET(req: Request) {
 
         // Get single customer with transactions
         if (customerId) {
-            const customer = await prisma.customer.findUnique({
-                where: { id: parseInt(customerId) },
-                include: {
-                    transactions: {
-                        include: {
-                            items: {
-                                include: {
-                                    product: true,
+            console.log(`Fetching customer with ID: ${customerId}`);
+            try {
+                const customer = await prisma.customer.findUnique({
+                    where: { id: parseInt(customerId) },
+                    include: {
+                        transactions: {
+                            include: {
+                                items: {
+                                    include: {
+                                        product: true,
+                                    },
                                 },
                             },
+                            orderBy: { createdAt: "desc" },
+                            take: 10,
                         },
-                        orderBy: { createdAt: "desc" },
-                        take: 10,
                     },
-                },
-            });
+                });
 
-            if (!customer) {
-                return NextResponse.json({ error: "Customer not found" }, { status: 404 });
+                if (!customer) {
+                    console.log(`Customer with ID ${customerId} not found`);
+                    return NextResponse.json({ error: "Customer not found" }, { status: 404 });
+                }
+
+                console.log(`Found customer: ${customer.name}`);
+                return NextResponse.json(customer);
+            } catch (err) {
+                console.error("Error fetching single customer:", err);
+                return NextResponse.json({ error: "Error fetching customer details" }, { status: 500 });
             }
-
-            return NextResponse.json(customer);
         }
 
         // Build where clause for filtering
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const where: any = {};
 
         if (search) {
             where.OR = [
-                { name: { contains: search } },
-                { email: { contains: search } },
+                { name: { contains: search, mode: 'insensitive' } },
+                { email: { contains: search, mode: 'insensitive' } },
                 { phone: { contains: search } },
             ];
         }
@@ -51,6 +59,8 @@ export async function GET(req: Request) {
             where.tier = tier;
         }
 
+        console.log("Fetching customers with filters:", { search, tier });
+        
         const customers = await prisma.customer.findMany({
             where,
             include: {
@@ -61,10 +71,14 @@ export async function GET(req: Request) {
             orderBy: { createdAt: "desc" },
         });
 
+        console.log(`Found ${customers.length} customers`);
         return NextResponse.json(customers);
     } catch (error) {
-        console.error("Error fetching customers:", error);
-        return NextResponse.json({ error: "Failed to fetch customers" }, { status: 500 });
+        console.error("Error in GET /api/customers:", error);
+        return NextResponse.json(
+            { error: error instanceof Error ? error.message : "Failed to fetch customers" },
+            { status: 500 }
+        );
     }
 }
 
