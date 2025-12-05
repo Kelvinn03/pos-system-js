@@ -3,22 +3,7 @@
 
 import { useEffect, useState, useMemo } from "react";
 import { Container, Table, Button, Modal, Form, Spinner, Alert, Row, Col, Badge, InputGroup } from "react-bootstrap";
-
-type Category = {
-  id: number;
-  name: string;
-};
-
-type Product = {
-  id: number;
-  name: string;
-  sku: string;
-  priceCents: number;
-  stock: number;
-  image: string | null;
-  categoryId: number | null;
-  category: Category | null;
-};
+import type { Category, Product } from "@/types";
 
 const initialFormState = {
   name: "",
