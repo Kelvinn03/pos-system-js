@@ -3,7 +3,16 @@
 import Link from "next/link";
 import type { Session } from "next-auth";
 import { usePathname } from "next/navigation";
+import {
+  LayoutDashboard,
+  Package,
+  Monitor,
+  Receipt,
+  Users,
+  Menu
+} from "lucide-react";
 import NavbarUserActions from "./NavbarUserActions";
+import styles from "./AppNavbar.module.css";
 
 interface AppNavbarProps {
   session: Session | null;
@@ -17,13 +26,13 @@ export default function AppNavbar({ session }: AppNavbarProps) {
   if (isAuthPage) return null;
 
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div className="container-fluid">
-        <Link className="navbar-brand" href="/">
+    <nav className={`navbar navbar-expand-lg ${styles.navbar}`}>
+      <div className="container-fluid px-4">
+        <Link className={`navbar-brand ${styles.brand}`} href="/">
           POS System
         </Link>
         <button
-          className="navbar-toggler"
+          className={`navbar-toggler ${styles.toggler}`}
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
@@ -31,40 +40,55 @@ export default function AppNavbar({ session }: AppNavbarProps) {
           aria-expanded="false"
           aria-label="Toggle navigation"
         >
-          <span className="navbar-toggler-icon"></span>
+          <Menu size={24} />
         </button>
         <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav me-auto">
+          <ul className="navbar-nav me-auto gap-2">
             {user && (
               <>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/">
+                  <Link
+                    className={`nav-link ${styles.navLink} ${pathname === "/" ? styles.navLinkActive : ""}`}
+                    href="/"
+                  >
+                    <LayoutDashboard size={18} />
                     Dashboard
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/products">
+                  <Link
+                    className={`nav-link ${styles.navLink} ${pathname === "/products" ? styles.navLinkActive : ""}`}
+                    href="/products"
+                  >
+                    <Package size={18} />
                     Products
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/pos">
+                  <Link
+                    className={`nav-link ${styles.navLink} ${pathname === "/pos" ? styles.navLinkActive : ""}`}
+                    href="/pos"
+                  >
+                    <Monitor size={18} />
                     POS Terminal
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/transactions">
+                  <Link
+                    className={`nav-link ${styles.navLink} ${pathname === "/transactions" ? styles.navLinkActive : ""}`}
+                    href="/transactions"
+                  >
+                    <Receipt size={18} />
                     Transactions
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/contact">
-                    Contact Us
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" href="/support">
-                    Customer Service
+                  <Link
+                    className={`nav-link ${styles.navLink} ${pathname === "/customers" ? styles.navLinkActive : ""}`}
+                    href="/customers"
+                  >
+                    <Users size={18} />
+                    Customers
                   </Link>
                 </li>
               </>
@@ -73,11 +97,11 @@ export default function AppNavbar({ session }: AppNavbarProps) {
           {user ? (
             <NavbarUserActions name={user.name} email={user.email} />
           ) : (
-            <div className="d-flex align-items-center gap-2">
-              <Link className="btn btn-outline-light btn-sm" href="/login">
+            <div className="d-flex align-items-center gap-3">
+              <Link className={`btn ${styles.navLink}`} href="/login">
                 Login
               </Link>
-              <Link className="btn btn-primary btn-sm" href="/register">
+              <Link className="btn btn-primary" href="/register">
                 Register
               </Link>
             </div>
