@@ -58,13 +58,8 @@ export default function AppNavbar({ session }: AppNavbarProps) {
                   </Link>
                 </li>
                 <li className="nav-item">
-                  <Link className="nav-link" href="/contact">
-                    Contact Us
-                  </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" href="/support">
-                    Customer Service
+                  <Link className="nav-link" href="/customers">
+                    Customers
                   </Link>
                 </li>
               </>

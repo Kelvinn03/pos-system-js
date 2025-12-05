@@ -251,6 +251,7 @@ a {
   font-size: 0.95rem;
   transition: all 0.2s ease;
   background: #f8fafc;
+  color: #1e293b;
 }
 
 .auth-input-group input:focus {
