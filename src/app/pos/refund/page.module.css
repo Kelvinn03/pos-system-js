@@ -1,0 +1,75 @@
+.container {
+  padding: 24px;
+  font-family: Inter, system-ui, Arial, sans-serif;
+}
+.header h1 {
+  margin: 0 0 6px 0;
+}
+.header p {
+  margin: 0 0 12px 0;
+  color: #4a5568;
+}
+.content {
+  display: flex;
+  gap: 24px;
+}
+.leftColumn {
+  flex: 1 1 0;
+}
+.rightColumn {
+  width: 360px;
+}
+.searchCard, .recentCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 16px;
+  border: 1px solid #e6eef8;
+  margin-bottom: 16px;
+}
+.searchRow {
+  display: flex;
+  gap: 8px;
+}
+.searchRow input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+}
+.searchRow button {
+  padding: 8px 12px;
+  background: linear-gradient(135deg,#667eea,#764ba2);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+}
+.resultsGrid {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+.resultCard {
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  padding: 12px;
+  border-radius: 10px;
+}
+.cardHeader { display:flex; justify-content:space-between; align-items:center }
+.cardBody p { margin: 6px 0; color:#4a5568 }
+.selectBtn { background:#48bb78; color:#fff; border:none; padding:8px 12px; border-radius:8px }
+.itemsSection { margin-top: 18px; background:#fff; padding:12px; border-radius:10px; border:1px solid #e2e8f0 }
+.selectedInfo { background:#f7fafc; padding:10px; border-left:4px solid #667eea; border-radius:6px }
+.itemsGrid { display:grid; gap:10px; margin-top:10px }
+.itemCard { display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:8px; border:1px solid #e6eef8; background:#fff }
+.itemInfo h5 { margin:0 0 6px 0 }
+.itemControls { display:flex; gap:12px; align-items:center }
+.checkboxLabel input { margin-right:6px }
+.summaryBar { display:flex; justify-content:space-between; align-items:center; margin-top:12px }
+.actions { display:flex; gap:8px }
+.processBtn { background:#e53e3e; color:#fff; border:none; padding:8px 12px; border-radius:8px }
+.cancelBtn { background:#f7fafc; border:1px solid #e2e8f0; padding:8px 12px; border-radius:8px }
+.noResults { padding:40px; color:#a0aec0 }
+.recentItem { display:flex; justify-content:space-between; padding:8px 6px; border-bottom:1px dashed #edf2f7 }
+.modalBackdrop { position:fixed; inset:0; background:rgba(0,0,0,0.35); display:flex; align-items:center; justify-content:center }
+.modal { background:#fff; padding:18px; border-radius:10px; width:420px; border:1px solid #e6eef8 }
+.modalActions { display:flex; gap:8px; margin-top:12px }
