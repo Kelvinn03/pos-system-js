@@ -90,6 +90,43 @@ a {
   overflow: hidden;
 }
 
+/* Reusable Premium Background */
+.premium-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #1e2a4a 0%, #2d3a5c 50%, #3d4a6c 100%);
+  z-index: -1;
+}
+
+.premium-bg::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  right: -10%;
+  width: 60%;
+  height: 80%;
+  background: rgba(65, 80, 120, 0.6);
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.premium-bg::after {
+  content: "";
+  position: absolute;
+  bottom: -30%;
+  left: -15%;
+  width: 70%;
+  height: 70%;
+  background: rgba(50, 65, 100, 0.5);
+  border-radius: 50% 60% 70% 30% / 40% 50% 60% 50%;
+  z-index: 1;
+  pointer-events: none;
+}
+
 .auth-bg {
   position: absolute;
   top: 0;
@@ -100,7 +137,6 @@ a {
   z-index: 0;
 }
 
-/* Organic blob shapes */
 .auth-bg::before {
   content: "";
   position: absolute;

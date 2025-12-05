@@ -260,17 +260,18 @@ export default function CustomersPage() {
     const styles = {
         page: {
             minHeight: "100vh",
-            background: "linear-gradient(180deg, #f8fafc 0%, #e2e8f0 100%)",
             paddingTop: "2rem",
             paddingBottom: "3rem",
+            position: "relative" as const,
         },
         header: {
-            background: "linear-gradient(135deg, #1e293b 0%, #334155 100%)",
+            background: "rgba(255, 255, 255, 0.05)",
+            backdropFilter: "blur(10px)",
             borderRadius: "1rem",
             padding: "2rem",
             marginBottom: "2rem",
             color: "white",
-            boxShadow: "0 10px 40px rgba(30, 41, 59, 0.15)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
         },
         statCard: {
             borderRadius: "1rem",
@@ -280,21 +281,24 @@ export default function CustomersPage() {
             overflow: "hidden",
         },
         customerCard: {
-            background: "white",
+            background: "rgba(255, 255, 255, 0.05)",
+            backdropFilter: "blur(10px)",
             borderRadius: "1rem",
             padding: "1.25rem",
             marginBottom: "1rem",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.04)",
-            border: "1px solid #e2e8f0",
+            boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
             transition: "all 0.3s ease",
+            color: "white",
         },
         searchBox: {
-            background: "white",
+            background: "rgba(255, 255, 255, 0.05)",
+            backdropFilter: "blur(10px)",
             borderRadius: "1rem",
             padding: "1.5rem",
             marginBottom: "1.5rem",
-            boxShadow: "0 4px 15px rgba(0,0,0,0.05)",
-            border: "none",
+            boxShadow: "0 4px 15px rgba(0,0,0,0.1)",
+            border: "1px solid rgba(255, 255, 255, 0.1)",
         },
         avatar: (tier: string) => ({
             width: 56,
@@ -331,6 +335,7 @@ export default function CustomersPage() {
 
     return (
         <div style={styles.page}>
+            <div className="premium-bg" />
             <Container>
                 {/* Premium Header */}
                 <div style={styles.header}>
@@ -390,7 +395,10 @@ export default function CustomersPage() {
                                 <Card
                                     style={{
                                         ...styles.statCard,
-                                        background: "white",
+                                        background: "rgba(255, 255, 255, 0.05)",
+                                        backdropFilter: "blur(10px)",
+                                        border: "1px solid rgba(255, 255, 255, 0.1)",
+                                        color: "white"
                                     }}
                                     className="h-100 hover-lift"
                                     onClick={() => setFilterTier(filterTier === tier ? "" : tier)}
@@ -438,11 +446,11 @@ export default function CustomersPage() {
                             <InputGroup>
                                 <InputGroup.Text
                                     style={{
-                                        background: "#f1f5f9",
+                                        background: "rgba(0, 0, 0, 0.2)",
                                         border: "none",
                                         borderRadius: "0.75rem 0 0 0.75rem",
                                         padding: "0.75rem 1rem",
-                                        color: "#64748b",
+                                        color: "#94a3b8",
                                     }}
                                 >
                                     <Search size={18} />
@@ -454,9 +462,10 @@ export default function CustomersPage() {
                                     onChange={(e) => setSearchTerm(e.target.value)}
                                     style={{
                                         border: "none",
-                                        background: "#f1f5f9",
+                                        background: "rgba(0, 0, 0, 0.2)",
                                         borderRadius: "0 0.75rem 0.75rem 0",
                                         padding: "0.75rem 1rem",
+                                        color: "white",
                                     }}
                                 />
                             </InputGroup>
@@ -465,11 +474,11 @@ export default function CustomersPage() {
                             <InputGroup>
                                 <InputGroup.Text
                                     style={{
-                                        background: "#f1f5f9",
+                                        background: "rgba(0, 0, 0, 0.2)",
                                         border: "none",
                                         borderRadius: "0.75rem 0 0 0.75rem",
                                         padding: "0.75rem 1rem",
-                                        color: "#64748b",
+                                        color: "#94a3b8",
                                     }}
                                 >
                                     <Filter size={18} />
@@ -479,9 +488,10 @@ export default function CustomersPage() {
                                     onChange={(e) => setFilterTier(e.target.value)}
                                     style={{
                                         border: "none",
-                                        background: "#f1f5f9",
+                                        background: "rgba(0, 0, 0, 0.2)",
                                         borderRadius: "0 0.75rem 0.75rem 0",
                                         padding: "0.75rem 1rem",
+                                        color: "white",
                                     }}
                                 >
                                     <option value="">All Tiers</option>
@@ -493,8 +503,8 @@ export default function CustomersPage() {
                             </InputGroup>
                         </Col>
                         <Col md={4} className="text-end">
-                            <span className="text-muted" style={{ fontSize: "0.9rem" }}>
-                                Showing <strong>{filteredCustomers.length}</strong> of <strong>{customers.length}</strong> customers
+                            <span className="text-white-50" style={{ fontSize: "0.9rem" }}>
+                                Showing <strong className="text-white">{filteredCustomers.length}</strong> of <strong className="text-white">{customers.length}</strong> customers
                             </span>
                         </Col>
                     </Row>
@@ -550,9 +560,9 @@ export default function CustomersPage() {
                                                         <TierIcon size={14} /> {customer.tier}
                                                     </span>
                                                     <Badge
-                                                        bg="light"
-                                                        text="dark"
-                                                        style={{ fontWeight: 500, padding: "0.4rem 0.6rem" }}
+                                                        bg="dark"
+                                                        text="light"
+                                                        style={{ fontWeight: 500, padding: "0.4rem 0.6rem", border: "1px solid rgba(255,255,255,0.1)" }}
                                                     >
                                                         {customer._count?.transactions || 0} orders
                                                     </Badge>
@@ -561,7 +571,7 @@ export default function CustomersPage() {
                                         </div>
 
                                         {/* Contact Info */}
-                                        <div className="mb-3" style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                                        <div className="mb-3" style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
                                             {customer.email && (
                                                 <div className="d-flex align-items-center gap-2 mb-1">
                                                     <Mail size={14} /> {customer.email}
@@ -578,17 +588,17 @@ export default function CustomersPage() {
                                         </div>
 
                                         {/* Loyalty Progress */}
-                                        <div className="mb-3 p-3" style={{ background: "#f8fafc", borderRadius: "0.75rem" }}>
+                                        <div className="mb-3 p-3" style={{ background: "rgba(0,0,0,0.2)", borderRadius: "0.75rem" }}>
                                             <div className="d-flex justify-content-between mb-2">
-                                                <span style={{ fontSize: "0.8rem", color: "#64748b" }}>Loyalty Points</span>
-                                                <span className="fw-bold" style={{ color: "#6366f1" }}>
+                                                <span style={{ fontSize: "0.8rem", color: "#94a3b8" }}>Loyalty Points</span>
+                                                <span className="fw-bold" style={{ color: "#818cf8" }}>
                                                     {customer.loyaltyPoints.toLocaleString()} pts
                                                 </span>
                                             </div>
                                             <ProgressBar
                                                 now={progress.progress}
-                                                style={{ height: 6, borderRadius: 10, background: "#e2e8f0" }}
-                                                variant="primary"
+                                                style={{ height: 6, borderRadius: 10, background: "rgba(255,255,255,0.1)" }}
+                                                variant="success"
                                             />
                                             {progress.nextTier && (
                                                 <div className="text-end mt-1" style={{ fontSize: "0.75rem", color: "#94a3b8" }}>
@@ -609,9 +619,9 @@ export default function CustomersPage() {
                                                 <Eye size={16} /> View Profile
                                             </Button>
                                             <Button
-                                                variant="outline-secondary"
+                                                variant="outline-light"
                                                 size="sm"
-                                                style={{ ...styles.actionButton, padding: "0.5rem 0.75rem" }}
+                                                style={{ ...styles.actionButton, padding: "0.5rem 0.75rem", borderColor: "rgba(255,255,255,0.2)", color: "#e2e8f0" }}
                                                 onClick={() => openModal(customer)}
                                             >
                                                 <Edit2 size={16} />
