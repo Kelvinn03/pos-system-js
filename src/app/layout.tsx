@@ -4,6 +4,7 @@ import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { auth } from "@/auth";
 import AppNavbar from "@/components/AppNavbar";
+import SessionProvider from "@/components/SessionProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,8 +31,10 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <AppNavbar session={session} />
-        {children}
+        <SessionProvider session={session}>
+          <AppNavbar session={session} />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
