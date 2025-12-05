@@ -98,12 +98,12 @@ export default function PaymentClient() {
           </div>
           <div role="button" className="card p-3 text-center flex-fill" onClick={() => setMethod("debit")}>
             <div className="h5">Debit</div>
-            <Image src="/debit.jpg" alt="Debit card" width={48} height={48} style={{ objectFit: "contain", display: "block", margin: "8px auto" }} />
+            <img src="/debit.jpg" alt="Debit card" width={48} height={48} style={{ objectFit: "contain", display: "block", margin: "8px auto" }} />
             <div className="text-muted">Card payment</div>
           </div>
           <div role="button" className="card p-3 text-center flex-fill" onClick={() => setMethod("qris")}>
             <div className="h5">QRIS</div>
-            <Image src="/qris.png" alt="QRIS" width={48} height={48} style={{ objectFit: "contain", display: "block", margin: "8px auto" }} />
+            <img src="/qris.png" alt="QRIS" width={48} height={48} style={{ objectFit: "contain", display: "block", margin: "8px auto" }} />
             <div className="text-muted">Scan QR</div>
           </div>
         </div>
