@@ -83,6 +83,16 @@ export default function AppNavbar({ session }: AppNavbarProps) {
                   </Link>
                 </li>
                 <li className="nav-item">
+                <Link className="nav-link" href="/contact">
+                  Contact Us
+                </Link>
+                </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/support">
+                    Support Center
+                  </Link>
+                </li>
+                <li className="nav-item">
                   <Link
                     className={`nav-link ${styles.navLink} ${pathname === "/customers" ? styles.navLinkActive : ""}`}
                     href="/customers"
