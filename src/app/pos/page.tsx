@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
+import Link from "next/link";
 
 export default async function PosTerminalPage() {
   const session = await auth();
@@ -22,6 +23,11 @@ export default async function PosTerminalPage() {
           <p className="card-text mb-0">
             Here we will show the list of selected items, quantities, totals, and payment actions.
           </p>
+          <div className="mt-3">
+            <Link href="/pos/refund" className="btn btn-outline-secondary me-2">
+              Refund
+            </Link>
+          </div>
         </div>
       </div>
     </div>
