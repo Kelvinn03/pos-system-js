@@ -99,27 +99,22 @@ export default function Dashboard() {
           <div className="d-flex align-items-center gap-2">
             {status === "loading" ? (
               <Spinner animation="border" size="sm" />
-            ) : session?.user ? (
-              <Button
-                variant="outline-danger"
-                size="sm"
-                onClick={handleLogout}
-                disabled={isPending}
-              >
-                {isPending ? "Logging out..." : "🚪 Logout"}
-              </Button>
             ) : (
-              <>
-                <Link href="/login" className="btn btn-outline-primary btn-sm">
-                  Login
-                </Link>
-                <Link href="/register" className="btn btn-primary btn-sm">
-                  Register
-                </Link>
-              </>
+              !session?.user && (
+                <>
+                  <Link href="/login" className="btn btn-outline-primary btn-sm">
+                    Login
+                  </Link>
+                  <Link href="/register" className="btn btn-primary btn-sm">
+                    Register
+                  </Link>
+                </>
+              )
             )}
           </div>
         </div>
+
+
 
         {/* --- BAGIAN 1: KARTU RINGKASAN (Target Hari Ini) --- */}
         {loading ? (
