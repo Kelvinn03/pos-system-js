@@ -57,6 +57,9 @@ export async function POST(req: Request) {
       if (!p) {
         return NextResponse.json({ error: `Product not found (id=${it.id})` }, { status: 400 });
       }
+      if (p.stock < it.quantity) {
+        return NextResponse.json({ error: `Insufficient stock for ${p.name}` }, { status: 400 });
+      }
       if (typeof it.priceCents === "number" && it.priceCents !== p.priceCents) {
         return NextResponse.json({ error: `Price mismatch for product id=${it.id}` }, { status: 400 });
       }
@@ -79,7 +82,22 @@ export async function POST(req: Request) {
     }
     const cashierId = parseInt(session.user.id as string, 10);
 
-    const created = await prisma.transaction.create({
+    const transactionOperations = [];
+
+    for (const it of incoming) {
+      transactionOperations.push(
+        prisma.product.update({
+          where: {
+            id: it.id,
+            stock: { gte: it.quantity },
+          },
+          data: { stock: { decrement: it.quantity } },
+        }),
+      );
+    }
+
+    // Operation to create the transaction
+    const createTransactionOperation = prisma.transaction.create({
       data: {
         totalCents,
         cashierId: cashierId ?? undefined,
@@ -97,6 +115,10 @@ export async function POST(req: Request) {
       },
       include: { items: true, cashier: true },
     });
+
+    transactionOperations.push(createTransactionOperation);
+    const results = await prisma.$transaction(transactionOperations);
+    const created = results[results.length - 1];
 
     return NextResponse.json(created, { status: 201 });
   } catch (err) {
