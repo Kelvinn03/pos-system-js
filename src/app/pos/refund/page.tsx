@@ -67,14 +67,28 @@ export default function RefundPage() {
     for (const item of selected.items) {
       const key = item.id;
       if (checkedMap[key]?.checked) {
-        total += (checkedMap[key]?.reason ? item.price * item.quantity : item.price * item.quantity) || 0;
+        // refund the currently selected quantity for the item (default: full quantity)
+        const qty = item.quantity || 0;
+        total += (item.price || 0) * qty;
       }
     }
     return total;
   }, [checkedMap, selected]);
 
   function searchTransaction() {
-    if (!searchTerm) setResults([]);
+    // run same filter as the search effect so the button triggers an immediate search
+    if (!searchTerm) {
+      setResults([]);
+      return;
+    }
+    const term = searchTerm.toLowerCase();
+    const res = transactions.filter((t) => {
+      if (!t) return false;
+      if (String(t.id).toLowerCase().includes(term)) return true;
+      if (t.customerName && t.customerName.toLowerCase().includes(term)) return true;
+      return false;
+    });
+    setResults(res);
   }
 
   function selectTransaction(id: string) {
@@ -109,7 +123,7 @@ export default function RefundPage() {
     setProcessing(true);
     const refundItems = selected.items
       .filter((it) => checkedMap[it.id]?.checked)
-      .map((it) => ({ id: it.id, name: it.name, quantity: it.quantity, refundAmount: it.price * it.quantity, reason: checkedMap[it.id].reason }));
+      .map((it) => ({ id: it.id, name: it.name, quantity: it.quantity, refundAmount: (it.price || 0) * (it.quantity || 0), reason: checkedMap[it.id].reason }));
 
     const refund: Refund = {
       id: `R-${Date.now()}`,
@@ -128,13 +142,43 @@ export default function RefundPage() {
     localStorage.setItem("posRefunds", JSON.stringify(rf));
     setRecentRefunds(rf);
 
-    const products = JSON.parse(localStorage.getItem("posProducts") || "[]");
+    // restore stock for refunded items
+    const products: Array<{ id?: string | number; name?: string; stock?: number }> = JSON.parse(
+      localStorage.getItem("posProducts") || "[]"
+    );
     if (Array.isArray(products)) {
       refundItems.forEach((ri) => {
-        const p = products.find((pp: any) => pp.name === ri.name || String(pp.id) === ri.id);
-        if (p) p.stock = (p.stock || 0) + ri.quantity;
+        const p = products.find((pp) => pp.name === ri.name || String(pp.id) === ri.id);
+        if (p) p.stock = (p.stock || 0) + (ri.quantity || 0);
       });
       localStorage.setItem("posProducts", JSON.stringify(products));
+    }
+
+    // update the original transaction: reduce quantities or mark refunded
+    try {
+      const txs: Transaction[] = JSON.parse(localStorage.getItem("posTransactions") || "[]");
+      const index = txs.findIndex((t) => t.id === selected.id);
+      if (index !== -1) {
+        const tx = txs[index];
+        refundItems.forEach((ri) => {
+          const itm = tx.items.find((x: TransactionItem) => String(x.id) === String(ri.id) || x.name === ri.name);
+          if (itm) {
+            itm.quantity = (itm.quantity || 0) - (ri.quantity || 0);
+            if (itm.quantity <= 0) {
+              // remove item
+              tx.items = tx.items.filter((x: TransactionItem) => !(String(x.id) === String(ri.id) || x.name === ri.name));
+            }
+          }
+        });
+        // recalc total
+        tx.total = (tx.items || []).reduce((s: number, x: TransactionItem) => s + ((x.price || 0) * (x.quantity || 0)), 0);
+        tx.status = (tx.items && tx.items.length > 0) ? "partially_refunded" : "refunded";
+        txs[index] = tx;
+        localStorage.setItem("posTransactions", JSON.stringify(txs));
+      }
+    } catch (e) {
+      // if anything goes wrong, keep going but log to console for debugging
+      console.error("Failed to update original transaction during refund:", e);
     }
 
     setProcessing(false);
