@@ -421,7 +421,7 @@ export default function CustomersPage() {
                                                 <Icon size={24} />
                                             </div>
                                             <div>
-                                                <p className="mb-0 text-muted" style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                                                <p className="mb-0 text-white-50" style={{ fontSize: "0.8rem", textTransform: "uppercase", letterSpacing: "0.5px" }}>
                                                     {tier}
                                                 </p>
                                                 <h3 className="mb-0 fw-bold">{count}</h3>
@@ -517,14 +517,22 @@ export default function CustomersPage() {
                         <p className="mt-3 text-muted">Loading customers...</p>
                     </div>
                 ) : filteredCustomers.length === 0 ? (
-                    <Card style={{ borderRadius: "1rem", border: "none", textAlign: "center", padding: "3rem" }}>
-                        <div className="mx-auto mb-3 text-muted">
+                    <Card style={{
+                        borderRadius: "1rem",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        textAlign: "center",
+                        padding: "3rem",
+                        background: "rgba(255,255,255,0.05)",
+                        backdropFilter: "blur(10px)",
+                        color: "white"
+                    }}>
+                        <div className="mx-auto mb-3 text-white-50">
                             <User size={64} />
                         </div>
-                        <h5 className="text-muted">
+                        <h5 className="text-white">
                             {searchTerm || filterTier ? "No customers match your search" : "No customers yet"}
                         </h5>
-                        <p className="text-muted mb-4">
+                        <p className="text-white-50 mb-4">
                             {searchTerm || filterTier ? "Try adjusting your filters" : "Add your first customer to get started!"}
                         </p>
                         {!searchTerm && !filterTier && (
@@ -583,7 +591,7 @@ export default function CustomersPage() {
                                                 </div>
                                             )}
                                             {!customer.email && !customer.phone && (
-                                                <span className="text-muted fst-italic">No contact info</span>
+                                                <span className="text-white-50 fst-italic">No contact info</span>
                                             )}
                                         </div>
 
