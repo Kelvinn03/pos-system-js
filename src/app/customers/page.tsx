@@ -129,16 +129,26 @@ export default function CustomersPage() {
         setLoading(true);
         try {
             const res = await fetch("/api/customers");
-            const data = await res.json();
-            if (Array.isArray(data)) {
-                setCustomers(data);
-            } else {
-                console.error("Received non-array data:", data);
-                setCustomers([]);
-                if (data.error) setErrorMsg(data.error);
+            
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}));
+                throw new Error(errorData.error || 'Failed to fetch customers');
             }
+            
+            const data = await res.json();
+            
+            if (!Array.isArray(data)) {
+                console.error("Expected array but received:", data);
+                setErrorMsg("Unexpected data format received from server");
+                setCustomers([]);
+                return;
+            }
+            
+            setCustomers(data);
+            setErrorMsg("");
         } catch (err) {
-            console.error("Failed to fetch customers", err);
+            console.error("Failed to fetch customers:", err);
+            setErrorMsg(err instanceof Error ? err.message : "Failed to load customers");
             setCustomers([]);
         } finally {
             setLoading(false);
