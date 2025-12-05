@@ -81,6 +81,17 @@ export const {
     }),
   ],
   callbacks: {
+    authorized({ auth, request: { nextUrl } }) {
+      const isLoggedIn = !!auth?.user;
+      const isOnAuthPage = ["/login", "/register", "/forgot-password"].includes(nextUrl.pathname);
+
+      if (isOnAuthPage) {
+        if (isLoggedIn) return Response.redirect(new URL("/", nextUrl));
+        return true;
+      }
+
+      return isLoggedIn;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = (user as User).id;

@@ -3,6 +3,7 @@ import "./globals.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { auth } from "@/auth";
 import AppNavbar from "@/components/AppNavbar";
+import SessionProvider from "@/components/SessionProvider";
 
 export const metadata: Metadata = {
   title: "POS System",
@@ -18,9 +19,11 @@ export default async function RootLayout({
 
   return (
     <html lang="en">
-      <body>
-        <AppNavbar session={session} />
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <SessionProvider session={session}>
+          <AppNavbar session={session} />
+          {children}
+        </SessionProvider>
       </body>
     </html>
   );
