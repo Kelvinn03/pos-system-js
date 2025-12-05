@@ -3,11 +3,13 @@
 import { FormEvent, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function LoginPage() {
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -35,86 +37,102 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-vh-100 d-flex align-items-center justify-content-center bg-gradient px-3 py-5">
-      <div className="container">
-        <div className="row justify-content-center">
-          <div className="col-12 col-md-10 col-lg-8">
-            <div className="card shadow border-0 overflow-hidden login-card">
-              <div className="row g-0">
-                <div className="col-lg-5 bg-dark text-white p-4 d-flex flex-column justify-content-center gap-3">
-                  <div>
-                    <div className="brand-pill mb-3">POS</div>
-                    <p className="text-uppercase letter-spacing-small small mb-2">POS System UAS Front-end</p>
-                    <h2 className="h3 mb-2">Welcome back!</h2>
-                  </div>
-                  <p className="text-white-50 mb-0">
-                    Sign in to manage products, run the POS terminal, and review transactions.
-                  </p>
-                  <div>
-                    <p className="text-white-50 small mb-1">Don&apos;t have an account yet?</p>
-                    <a href="/register" className="link-light fw-semibold">
-                      Create one here
-                    </a>
-                  </div>
-                </div>
-                <div className="col-lg-7 p-4 p-lg-5 bg-white">
-                  <h1 className="h4 mb-4">Login to your account</h1>
-                  <div className={`alert ${error ? "alert-danger" : "alert-light text-muted border"}`} role="alert">
-                    {error ? error : "Enter your credentials to access the POS dashboard."}
-                  </div>
-                  <form onSubmit={handleSubmit} className="needs-validation" noValidate>
-                    <div className="mb-3">
-                      <label htmlFor="email" className="form-label">
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        className="form-control form-control-lg"
-                        id="email"
-                        name="email"
-                        placeholder="you@example.com"
-                        autoFocus
-                        required
-                      />
-                    </div>
-                    <div className="mb-3">
-                      <div className="d-flex justify-content-between align-items-center">
-                        <label htmlFor="password" className="form-label mb-0">
-                          Password
-                        </label>
-                        <a className="text-muted small text-decoration-none" href="#">
-                          Forgot password?
-                        </a>
-                      </div>
-                      <input
-                        type="password"
-                        className="form-control form-control-lg"
-                        id="password"
-                        name="password"
-                        required
-                      />
-                    </div>
-                    <div className="form-check mb-4">
-                      <input className="form-check-input" type="checkbox" value="" id="remember" defaultChecked />
-                      <label className="form-check-label" htmlFor="remember">
-                        Remember me
-                      </label>
-                    </div>
-                    <button type="submit" className="btn btn-primary w-100 py-2" disabled={isLoading}>
-                      {isLoading ? "Signing in..." : "Sign In"}
-                    </button>
-                    <p className="text-muted small mt-3 mb-0 text-center">
-                      New to the system? <a href="/register">Register here</a>
-                    </p>
-                  </form>
-                </div>
-              </div>
+    <div className="auth-page">
+      <div className="auth-bg"></div>
+      <div className="auth-content">
+        {/* Left Brand Side */}
+        <div className="auth-brand-side">
+          <div className="auth-logo">POS.</div>
+          <div className="auth-tagline">
+            <div className="auth-tagline-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+              </svg>
             </div>
-            <p className="text-center text-white-50 small mt-3">
-              Powered by Kelvin POS Platform
+            <h1>Manage sales<br />effortlessly.</h1>
+            <p>
+              POS System helps businesses track inventory, process transactions, and grow revenue with our powerful point of sale solution.
             </p>
           </div>
         </div>
+
+        {/* Right Form Side */}
+        <div className="auth-form-side">
+          <div className="auth-form-card animate-fade-in">
+            <h2>Log In</h2>
+            <p className="auth-subtitle">
+              New to POS? <Link href="/register">Sign up today.</Link>
+            </p>
+
+            {error && (
+              <div className="auth-alert error">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                  <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0-1A6 6 0 1 0 8 2a6 6 0 0 0 0 12zM7.25 5v4.5h1.5V5h-1.5zm0 6v1.5h1.5V11h-1.5z" />
+                </svg>
+                {error}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit}>
+              <div className="auth-input-group">
+                <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+                  <polyline points="22,6 12,13 2,6" />
+                </svg>
+                <input
+                  type="email"
+                  name="email"
+                  placeholder="Email address"
+                  autoFocus
+                  required
+                />
+              </div>
+
+              <div className="auth-input-group">
+                <svg className="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  placeholder="Password"
+                  required
+                />
+                <label className="password-toggle">
+                  <input
+                    type="checkbox"
+                    checked={showPassword}
+                    onChange={() => setShowPassword(!showPassword)}
+                  />
+                  Show
+                </label>
+              </div>
+
+              <div className="auth-options">
+                <label>
+                  <input type="checkbox" defaultChecked />
+                  Keep me logged in
+                </label>
+                <Link href="/forgot-password">Forgot password?</Link>
+              </div>
+
+              <button type="submit" className="auth-submit-btn" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Log In"}
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+      {/* Footer */}
+      <div className="auth-footer">
+        <div className="auth-footer-links">
+          <a href="#">Terms of Service</a>
+          <a href="#">Privacy Policy</a>
+        </div>
+        <p className="auth-footer-copyright">
+          © {new Date().getFullYear()} POS System. All rights reserved.
+        </p>
       </div>
     </div>
   );
