@@ -144,20 +144,20 @@ export default function CustomerServicePage() {
         >
           <input
             type="text"
-            placeholder="Nama (Opsional)"
+            placeholder="Nama kamu"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
 
           <input
             type="email"
-            placeholder="Email (Opsional)"
+            placeholder="Email kamu"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />
 
           <textarea
-            placeholder="Tulis saran Anda di sini..."
+            placeholder="Saran & Masukan"
             rows={4}
             value={message}
             onChange={(e) => setMessage(e.target.value)}
@@ -176,7 +176,7 @@ export default function CustomerServicePage() {
             position: 'fixed',
             bottom: '30px',
             right: '30px',
-            backgroundColor: 'black',
+            backgroundColor: 'grey',
             color: 'white',
             padding: '15px 20px',
             borderRadius: '8px',

@@ -43,7 +43,7 @@ export default function ContactPage() {
         <div
           style={{
             flex: 1,
-            border: '1px solid #ccc',
+            border: '1px solid #bdb4b4ff',
             borderRadius: '8px',
             padding: '20px',
             minWidth: '280px',
