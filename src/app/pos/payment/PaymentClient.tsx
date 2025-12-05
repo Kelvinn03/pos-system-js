@@ -201,7 +201,7 @@ export default function PaymentClient() {
                       <Form.Label>QRIS</Form.Label>
                       <div className="d-flex align-items-center gap-2">
                         <Button variant={qrisChecked ? "success" : "outline-secondary"} onClick={() => setQrisChecked((s) => !s)}>
-                          <Image src="/qris_code.jpg" alt="QRIS code" width={200} height={200} style={{ objectFit: "contain", display: "block" }} />
+                          <img src="/qris_code.jpg" alt="QRIS code" width={200} height={200} style={{ objectFit: "contain", display: "block" }} />
                           {qrisChecked ? "Checked" : "Check"}
                         </Button>
                         <div className="text-muted small">Toggle to simulate QR scan</div>
