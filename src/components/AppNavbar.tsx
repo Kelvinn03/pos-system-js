@@ -57,6 +57,11 @@ export default function AppNavbar({ session }: AppNavbarProps) {
                     Transactions
                   </Link>
                 </li>
+                <li className="nav-item">
+                  <Link className="nav-link" href="/customers">
+                    Customers
+                  </Link>
+                </li>
               </>
             )}
           </ul>

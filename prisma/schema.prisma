@@ -43,6 +43,9 @@ model Transaction {
   items       TransactionItem[]
   cashierId   Int?
   cashier     User?             @relation(fields: [cashierId], references: [id])
+  
+  customerId  Int?
+  customer    Customer?         @relation(fields: [customerId], references: [id])
 }
 
 model TransactionItem {
@@ -70,7 +73,27 @@ model User {
   transactions Transaction[]
 }
 
+model Customer {
+  id            Int             @id @default(autoincrement())
+  name          String
+  email         String?         @unique
+  phone         String?
+  loyaltyPoints Int             @default(0)
+  tier          MembershipTier  @default(BRONZE)
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+
+  transactions  Transaction[]
+}
+
 enum Role {
   ADMIN
   CASHIER
+}
+
+enum MembershipTier {
+  BRONZE
+  SILVER
+  GOLD
+  PLATINUM
 }
