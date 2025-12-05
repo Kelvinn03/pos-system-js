@@ -130,9 +130,16 @@ export default function CustomersPage() {
         try {
             const res = await fetch("/api/customers");
             const data = await res.json();
-            setCustomers(data);
+            if (Array.isArray(data)) {
+                setCustomers(data);
+            } else {
+                console.error("Received non-array data:", data);
+                setCustomers([]);
+                if (data.error) setErrorMsg(data.error);
+            }
         } catch (err) {
             console.error("Failed to fetch customers", err);
+            setCustomers([]);
         } finally {
             setLoading(false);
         }
@@ -152,7 +159,7 @@ export default function CustomersPage() {
     }
 
     const filteredCustomers = useMemo(() => {
-        let result = [...customers];
+        let result = Array.isArray(customers) ? [...customers] : [];
 
         if (searchTerm) {
             const lowerTerm = searchTerm.toLowerCase();
